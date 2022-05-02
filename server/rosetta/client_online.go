@@ -410,12 +410,12 @@ func (c *Client) ConstructionMetadataFromOptions(ctx context.Context, options ma
 	}
 
 	// if default fees suggestion is enabled and gas limit or price is unset, use default
-	if c.config.EnableDefaultSuggestedFee {
+	if c.config.EnableFeeSuggestion {
 		if constructionOptions.GasLimit <= 0 {
-			constructionOptions.GasLimit = uint64(c.config.SuggestGas)
+			constructionOptions.GasLimit = uint64(c.config.GasToSuggest)
 		}
 		if constructionOptions.GasPrice == "" {
-			denom := c.config.DefaultSuggestDenom
+			denom := c.config.DenomToSuggest
 			constructionOptions.GasPrice = c.config.SuggestPrices.AmountOf(denom).String() + denom
 		}
 	}
@@ -531,18 +531,15 @@ func (c *Client) getHeight(ctx context.Context, height *int64) (realHeight *int6
 	return
 }
 
+var initialHeightRE = regexp.MustCompile(`"initial_height":"(\d+)"`)
+
 func extractInitialHeightFromGenesisChunk(genesisChunk string) (int64, error) {
 	firstChunk, err := base64.StdEncoding.DecodeString(genesisChunk)
 	if err != nil {
 		return 0, err
 	}
 
-	re, err := regexp.Compile("\"initial_height\":\"(\\d+)\"") //nolint:gocritic
-	if err != nil {
-		return 0, err
-	}
-
-	matches := re.FindStringSubmatch(string(firstChunk))
+	matches := initialHeightRE.FindStringSubmatch(string(firstChunk))
 	if len(matches) != 2 {
 		return 0, errors.New("failed to fetch initial_height")
 	}

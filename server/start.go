@@ -357,17 +357,17 @@ func startInProcess(ctx *Context, clientCtx client.Context, appCreator types.App
 		}
 
 		conf := &rosetta.Config{
-			Blockchain:                config.Rosetta.Blockchain,
-			Network:                   config.Rosetta.Network,
-			TendermintRPC:             ctx.Config.RPC.ListenAddress,
-			GRPCEndpoint:              config.GRPC.Address,
-			Addr:                      config.Rosetta.Address,
-			Retries:                   config.Rosetta.Retries,
-			Offline:                   offlineMode,
-			EnableDefaultSuggestedFee: config.Rosetta.EnableDefaultSuggestedFee,
-			SuggestGas:                config.Rosetta.SuggestGas,
-			DefaultSuggestDenom:       config.Rosetta.DefaultSuggestDenom,
-			SuggestPrices:             minGasPrices.Sort(),
+			Blockchain:          config.Rosetta.Blockchain,
+			Network:             config.Rosetta.Network,
+			TendermintRPC:       ctx.Config.RPC.ListenAddress,
+			GRPCEndpoint:        config.GRPC.Address,
+			Addr:                config.Rosetta.Address,
+			Retries:             config.Rosetta.Retries,
+			Offline:             offlineMode,
+			EnableFeeSuggestion: config.Rosetta.EnableFeeSuggestion,
+			GasToSuggest:        config.Rosetta.GasToSuggest,
+			DenomToSuggest:      config.Rosetta.DenomToSuggest,
+			SuggestPrices:       minGasPrices.Sort(),
 		}
 		conf.WithCodec(clientCtx.InterfaceRegistry, clientCtx.Codec.(*codec.ProtoCodec))
 
